@@ -28,9 +28,14 @@ const styles = StyleSheet.create({
   layout: {
     height: 90,
     flexDirection: 'row',
-    paddingTop: 20,
     alignItems: 'center',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    backgroundColor: '#fff',
+    paddingTop: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f9f9f9'
   } as ViewStyle,
   title: {
     fontSize: 28

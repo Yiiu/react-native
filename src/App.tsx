@@ -37,7 +37,7 @@ class MainScreen extends React.Component<IProps, IState> {
           animated
           translucent
           barStyle="dark-content"
-          backgroundColor="rgba(0, 0, 0, 0)"
+          backgroundColor="rgba(0, 0, 0, .1)"
         />
         <Header /> 
         <ScrollView contentContainerStyle={[styles.layout]}>

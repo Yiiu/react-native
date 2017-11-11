@@ -6,9 +6,11 @@ import {
   PanResponder,
   Animated,
   Dimensions,
-  StyleSheet
+  StyleSheet,
+  BackHandler,
+  Platform
 } from 'react-native'
-
+const OS = Platform.OS
 import {
   PanResponderInstance,
   GestureResponderEvent,
@@ -24,16 +26,21 @@ interface IProps {
 }
   
 interface IState {
-  opacity: Animated.Animated
-  translateY: Animated.Animated
+  isOpen: boolean
+  isAnimateOpen: boolean
+  isAnimateClose: boolean
+  opacity: Animated.Value
+  translateY: Animated.Value
 }
  
 export default class Modal extends React.Component<IProps, IState> {
   static defaultProps = {
     onClose: () => null
   }
-
   public state = {
+    isOpen: this.props.visible,
+    isAnimateOpen: false,
+    isAnimateClose: false,
     opacity: new Animated.Value(0),
     translateY: new Animated.Value(windowHeight)
   }
@@ -51,6 +58,11 @@ export default class Modal extends React.Component<IProps, IState> {
     duration: 300,
     useNativeDriver: true
   })
+  
+  animOpen: Animated.CompositeAnimation = Animated.parallel([
+    this.maskAnimOpen,
+    this.contentAnimOpen
+  ])
     
   maskAnimClose: Animated.CompositeAnimation = Animated.timing(this.state.opacity, {
     toValue: 0,
@@ -63,6 +75,11 @@ export default class Modal extends React.Component<IProps, IState> {
     duration: 300,
     useNativeDriver: true
   })
+  
+  animClose: Animated.CompositeAnimation = Animated.parallel([
+    this.maskAnimClose,
+    this.contentAnimClose
+  ])
 
   _panResponder = PanResponder.create({
     // 要求成为响应者：
@@ -80,24 +97,71 @@ export default class Modal extends React.Component<IProps, IState> {
     const { visible } = newProps
     if (visible !== this.props.visible) {
       if (visible) {
+        if (OS !== 'ios') {
+          BackHandler.addEventListener('hardwareBackPress', this.backHandle)
+        }
+        this.setState({
+          isOpen: true
+        })
         this.animateOpen()
+      } else {
+        if (OS !== 'ios') {
+          BackHandler.removeEventListener('hardwareBackPress', this.backHandle)
+        }
+        this.animateClose()
       }
+    }
+  }
+  
+  backHandle = () => {
+    if (this.props.onClose) {
+      this.props.onClose()
+      return true
+    }
+  }
+
+  stopAnimateOpen = () => {
+    if (this.state.isAnimateOpen) {
+      this.animClose.stop()
+      this.setState({
+        isAnimateOpen: false
+      })
     }
   }
 
   animateOpen = () => {
-    Animated.parallel([
-      this.maskAnimOpen,
-      this.contentAnimOpen
-    ]).start()
+    this.stopAnimateClose()
+    this.setState({
+      isAnimateOpen: true
+    })
+    this.animOpen.start(() => {
+      this.setState({
+        isAnimateOpen: false
+      })
+    })
+  }
+
+  stopAnimateClose = () => {
+    if (this.state.isAnimateClose) {
+      this.animClose.stop()
+      this.setState({
+        isAnimateClose: false
+      })
+    }
   }
 
   animateClose = () => {
-    Animated.parallel([
-      this.maskAnimClose,
-      this.contentAnimClose
-    ]).start(() => {
+    this.stopAnimateOpen()
+    this.setState({
+      isAnimateClose: true
+    })
+    this.animClose.start(() => {
       if (this.props.onClose) {
+        this.state.translateY.setValue(windowHeight)
+        this.setState({
+          isAnimateClose: false,
+          isOpen: false
+        })
         this.props.onClose()
       }
     })
@@ -111,14 +175,18 @@ export default class Modal extends React.Component<IProps, IState> {
     }
     let onPanMove = (e: GestureResponderEvent, state: PanResponderGestureState) => {
       if (state.dy < 0) {
-        return
+        animEvt(e, {...state, dy: 0});
       } else {
         animEvt(e, state);
       }
     }
     let onPanRelease = (e: GestureResponderEvent, state: PanResponderGestureState) => {
       if (state.dy > 50) {
-        this.animateClose()
+        if (this.props.onClose) {
+          this.props.onClose()
+        } else {
+          this.animateOpen()
+        }
       } else {
         this.animateOpen()
       }
@@ -132,8 +200,8 @@ export default class Modal extends React.Component<IProps, IState> {
   }
   
   render () {
-    const { visible } = this.props;
-    if (!visible) {
+    const { isOpen } = this.state;
+    if (!isOpen) {
       return  <View/>
     }
     return (
