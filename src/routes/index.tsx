@@ -9,10 +9,10 @@ import {
   TextStyle
 } from 'react-native'
 
-import Day1 from './Day1'
+import Task1 from './Task1'
 
 export default StackNavigator({
-  Day1: {
-    screen: Day1,
+  Task1: {
+    screen: Task1,
   },
 })

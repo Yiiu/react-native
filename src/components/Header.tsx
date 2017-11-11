@@ -8,17 +8,21 @@ import {
 } from 'react-native'
 
 interface IProps {
-
+  title: string
 }
 interface IState {
 
 }
 
 export default class Header extends React.Component<IProps, IState> {
+  static defaultProps = {
+    title: ''
+  }
   render () {
+    const { title } = this.props;
     return (
       <View style={ styles.layout }>
-        <Text style={ styles.title }>Day</Text>
+        <Text style={ styles.title }>{ title }</Text>
       </View>
     )
   }

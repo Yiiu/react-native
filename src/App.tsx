@@ -16,7 +16,7 @@ import {
 
 import Header from './components/Header'
 import Navigator from './routes'
-import Day1 from './routes/Day1'
+import Task1 from './routes/Task1'
 
 let { height: windowHeight, width: windowWidth } = Dimensions.get('window')
 
@@ -39,12 +39,12 @@ class MainScreen extends React.Component<IProps, IState> {
           barStyle="dark-content"
           backgroundColor="rgba(0, 0, 0, .1)"
         />
-        <Header /> 
+        <Header title="RN-Task" /> 
         <ScrollView contentContainerStyle={[styles.layout]}>
           <TouchableOpacity
             activeOpacity={ 0.8 }
             style={[{ width: windowWidth / 2, height:  windowWidth / 2 }, styles.cardBox]}
-            onPress={() => navigate('Day1')}
+            onPress={() => navigate('Task1')}
           >
             <View style={ styles.card }>
               <Image
@@ -53,7 +53,7 @@ class MainScreen extends React.Component<IProps, IState> {
                 resizeMode="cover"
               />
               <View style={[{ width: windowWidth / 2, height:  windowWidth / 2 }, styles.mask ]} />
-              <Text style={ styles.title }>Day1</Text>
+              <Text style={ styles.title }>Task1</Text>
             </View>
           </TouchableOpacity>
         </ScrollView>
@@ -67,8 +67,8 @@ export default StackNavigator(
     Index: {
       screen: MainScreen
     },
-    Day1: {
-      screen: Day1
+    Task1: {
+      screen: Task1
     }
   },
   {
