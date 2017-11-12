@@ -49,13 +49,13 @@ export default class Modal extends React.Component<IProps, IState> {
   
   maskAnimOpen: Animated.CompositeAnimation = Animated.timing(this.state.opacity, {
     toValue: 1,
-    duration: 300,
+    duration: 250,
     useNativeDriver: true
   })
   
   contentAnimOpen: Animated.CompositeAnimation = Animated.timing(this.state.translateY, {
     toValue: 0,
-    duration: 300,
+    duration: 250,
     useNativeDriver: true
   })
   
@@ -66,13 +66,13 @@ export default class Modal extends React.Component<IProps, IState> {
     
   maskAnimClose: Animated.CompositeAnimation = Animated.timing(this.state.opacity, {
     toValue: 0,
-    duration: 300,
+    duration: 250,
     useNativeDriver: true
   })
   
   contentAnimClose: Animated.CompositeAnimation = Animated.timing(this.state.translateY, {
     toValue: windowHeight,
-    duration: 300,
+    duration: 250,
     useNativeDriver: true
   })
   
@@ -80,14 +80,6 @@ export default class Modal extends React.Component<IProps, IState> {
     this.maskAnimClose,
     this.contentAnimClose
   ])
-
-  _panResponder = PanResponder.create({
-    // 要求成为响应者：
-    onStartShouldSetPanResponder: (evt, gestureState) => true,
-    onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-    onMoveShouldSetPanResponder: (evt, gestureState) => true,
-    onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-  })
 
   componentWillMount () {
     this.createPanResponder()

@@ -17,6 +17,7 @@ import {
 import Header from './components/Header'
 import Navigator from './routes'
 import Task1 from './routes/Task1'
+import Task2 from './routes/Task2'
 
 let { height: windowHeight, width: windowWidth } = Dimensions.get('window')
 
@@ -56,6 +57,21 @@ class MainScreen extends React.Component<IProps, IState> {
               <Text style={ styles.title }>Task1</Text>
             </View>
           </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={ 0.8 }
+            style={[{ width: windowWidth / 2, height:  windowWidth / 2 }, styles.cardBox]}
+            onPress={() => navigate('Task2')}
+          >
+            <View style={ styles.card }>
+              <Image
+                source={{ uri: 'https://picsum.photos/800/800/?blur&random' }}
+                style={[{  width: windowWidth / 2, height:  windowWidth / 2 }, styles.bg]}
+                resizeMode="cover"
+              />
+              <View style={[{ width: windowWidth / 2, height:  windowWidth / 2 }, styles.mask ]} />
+              <Text style={ styles.title }>Task2</Text>
+            </View>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     )
@@ -69,6 +85,9 @@ export default StackNavigator(
     },
     Task1: {
       screen: Task1
+    },
+    Task2: {
+      screen: Task2
     }
   },
   {
