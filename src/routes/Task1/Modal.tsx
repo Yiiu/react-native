@@ -29,31 +29,30 @@ interface IState {
   isOpen: boolean
   isAnimateOpen: boolean
   isAnimateClose: boolean
-  opacity: Animated.Value
-  translateY: Animated.Value
 }
  
-export default class Modal extends React.Component<IProps, IState> {
+export default class Modal extends React.PureComponent<IProps, IState> {
   static defaultProps = {
     onClose: () => null
   }
   public state = {
     isOpen: this.props.visible,
     isAnimateOpen: false,
-    isAnimateClose: false,
-    opacity: new Animated.Value(0),
-    translateY: new Animated.Value(windowHeight)
+    isAnimateClose: false
   }
+
+  opacity: Animated.Value = new Animated.Value(0)
+  translateY: Animated.Value = new Animated.Value(windowHeight)
 
   pan: PanResponderInstance
   
-  maskAnimOpen: Animated.CompositeAnimation = Animated.timing(this.state.opacity, {
+  maskAnimOpen: Animated.CompositeAnimation = Animated.timing(this.opacity, {
     toValue: 1,
     duration: 250,
     useNativeDriver: true
   })
   
-  contentAnimOpen: Animated.CompositeAnimation = Animated.timing(this.state.translateY, {
+  contentAnimOpen: Animated.CompositeAnimation = Animated.timing(this.translateY, {
     toValue: 0,
     duration: 250,
     useNativeDriver: true
@@ -64,13 +63,13 @@ export default class Modal extends React.Component<IProps, IState> {
     this.contentAnimOpen
   ])
     
-  maskAnimClose: Animated.CompositeAnimation = Animated.timing(this.state.opacity, {
+  maskAnimClose: Animated.CompositeAnimation = Animated.timing(this.opacity, {
     toValue: 0,
     duration: 250,
     useNativeDriver: true
   })
   
-  contentAnimClose: Animated.CompositeAnimation = Animated.timing(this.state.translateY, {
+  contentAnimClose: Animated.CompositeAnimation = Animated.timing(this.translateY, {
     toValue: windowHeight,
     duration: 250,
     useNativeDriver: true
@@ -149,7 +148,7 @@ export default class Modal extends React.Component<IProps, IState> {
     })
     this.animClose.start(() => {
       if (this.props.onClose) {
-        this.state.translateY.setValue(windowHeight)
+        this.translateY.setValue(windowHeight)
         this.setState({
           isAnimateClose: false,
           isOpen: false
@@ -160,7 +159,7 @@ export default class Modal extends React.Component<IProps, IState> {
   }
 
   createPanResponder = () => {
-    let animEvt = Animated.event([null, {dy: this.state.translateY}]);
+    let animEvt = Animated.event([null, {dy: this.translateY}]);
   
     let onPanStart = (e: GestureResponderEvent, state: PanResponderGestureState) => {
       return true
@@ -196,16 +195,17 @@ export default class Modal extends React.Component<IProps, IState> {
     if (!isOpen) {
       return  <View/>
     }
+    console.log(123123)
     return (
       <Animated.View style={ styles.layout } {...this.pan.panHandlers}>
         <Animated.View
           style={[styles.mask, {
-            opacity: this.state.opacity
+            opacity: this.opacity
           }]}
         />
         <Animated.View
           style={[styles.content, {
-            transform: [{translateY: this.state.translateY}]
+            transform: [{translateY: this.translateY}]
           }]}
         >
           { this.props.children }
