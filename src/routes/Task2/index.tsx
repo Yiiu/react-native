@@ -20,7 +20,12 @@ import {
 import { BlurView } from 'react-native-blur';
 
 import Header from '../../components/Header'
+
 let { height: windowHeight, width: windowWidth } = Dimensions.get('window')
+
+const HEADER_MAX_HEIGHT = 230;
+const HEADER_MIN_HEIGHT = 80;
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT
 
 interface IProps {
 
@@ -40,65 +45,25 @@ export default class Task2 extends React.PureComponent<IProps, IState> {
     referenceReady: false,
     screen: null,
     scrollEnabled: false,
-    headerValue: new Animated.Value(280)
+    headerValue: new Animated.Value(0)
   }
 
   screen: any = null
   
-  componentWillMount () {
-    this.createPanResponder()
-  }
-  
-  pan: PanResponderInstance
+  scrollY: Animated.Value = new Animated.Value(0)
 
   imageLoaded = () => {
     this.setState({ screen: findNodeHandle(this.screen), referenceReady: true });
   }
 
-  createPanResponder = () => {
-    let animEvt = Animated.event([null, {dy: this.state.headerValue}]);
-  
-    let onPanStart = (e: GestureResponderEvent, state: PanResponderGestureState) => {
-      return true
-    }
-    let onPanMove = (e: GestureResponderEvent, state: PanResponderGestureState) => {
-      if (this.scrollView) {
-
-        this.scrollView.scrollResponderScrollTo({x: 0, y: 0, animated: true})
-      }
-      // if (state.dy < 0) {
-      //   animEvt(e, {...state, dy: 30});
-      // } else {
-      //   animEvt(e, state);
-      // }
-      // if (state.dy > 0) {
-      //   this.setState({
-      //     scrollEnabled: true
-      //   })
-      // }
-    }
-    let onPanRelease = (e: GestureResponderEvent, state: PanResponderGestureState) => {
-      // if (state.dy > 50) {
-      //   if (this.props.onClose) {
-      //     this.props.onClose()
-      //   } else {
-      //     this.animateOpen()
-      //   }
-      // } else {
-      //   this.animateOpen()
-      // }
-    }
-    this.pan = PanResponder.create({
-      onStartShouldSetPanResponder: onPanStart,
-      onPanResponderMove: onPanMove,
-      onPanResponderRelease: onPanRelease,
-      onPanResponderTerminate: onPanRelease,
-    });
-  }
-
   scrollView: any
 
   render () {
+    const headerHeight = this.scrollY.interpolate({
+      inputRange: [0, HEADER_SCROLL_DISTANCE],
+      outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+      extrapolate: 'clamp',
+    })
     const { visible } = this.state;
     let uri = 'https://picsum.photos/500/400'
     return (
@@ -106,12 +71,11 @@ export default class Task2 extends React.PureComponent<IProps, IState> {
         {/* <Header title="2123"/> */}
         <Animated.View
           style={{ flex: 1 }}
-          { ...this.pan.panHandlers }
         >
           <Animated.View
             removeClippedSubviews
             style={[styles.header, {
-              height: this.state.headerValue
+              height: headerHeight
             }]}
           >
             <Image
@@ -144,7 +108,11 @@ export default class Task2 extends React.PureComponent<IProps, IState> {
                 progressBackgroundColor="#ffff00"
               />
             }
+            onScroll={Animated.event(
+              [{nativeEvent: {contentOffset: {y: this.scrollY}}}]
+            )}
           >
+            <View style={{ height: HEADER_MAX_HEIGHT }} />
             <View>
               <Text>123123123</Text>
               <Text>123123123</Text>
@@ -213,13 +181,17 @@ const styles = StyleSheet.create({
     height: 280
   } as ViewStyle,
   header: {
-    overflow: 'hidden'
+    overflow: 'hidden',
+    position: 'absolute',
+    zIndex: 0,
+    top: 0,
+    left: 0
   },
   absolute: {
     position: 'absolute',
     top: 0,
     left: 0,
     width: windowWidth,
-    height: 390
+    height: 400
   } as ViewStyle,
 });
