@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { StackNavigator, NavigationScreenProp } from 'react-navigation'
+import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator'
 import {
   View,
   Text,
@@ -11,7 +12,9 @@ import {
   ScrollView,
   Image,
   ImageStyle,
-  TouchableOpacity
+  TouchableOpacity,
+  Easing,
+  Animated
 } from 'react-native'
 
 import Header from './components/Header'
@@ -93,6 +96,9 @@ export default StackNavigator(
   {
     initialRouteName: 'Index',
     headerMode: 'none',
+    transitionConfig: () => ({
+        screenInterpolator: CardStackStyleInterpolator.forHorizontal
+    })
   }
 )
 
